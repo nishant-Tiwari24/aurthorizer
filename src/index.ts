@@ -2,10 +2,10 @@ import 'dotenv/config';
 import cloneAndParseRepo from './github.js';
 import readline from 'readline';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import colors from 'colors';
+import kleur from 'kleur';
 import Table from 'cli-table';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || 'AIzaSyCTkqNDJchmfc0bkN97haQT6NfyDPeBsqY');
 
 const sendToGemini = async (code: string): Promise<void> => {
   try {
@@ -35,7 +35,7 @@ const sendToGemini = async (code: string): Promise<void> => {
       }
     `;
 
-    const result = await model.generateContent( prompt );
+    const result = await model.generateContent(prompt);
     const response = result.response;
     const text = await response.text();
     
@@ -46,16 +46,16 @@ const sendToGemini = async (code: string): Promise<void> => {
       const jsonResponse = JSON.parse(jsonString);
       displayResults(jsonResponse);
     } else {
-      console.error(colors.red('Failed to extract JSON from the response.'));
+      console.error(kleur.red('Failed to extract JSON from the response.'));
     }
 
   } catch (error) {
-    console.error(colors.red('Error sending code to Gemini:'), error);
+    console.error(kleur.red('Error sending code to Gemini:'), error);
   }
 };
 
 const displayResults = (data: any): void => {
-  console.log(colors.green.bold('\nCode Review Results:\n'));
+  console.log(kleur.green().bold('\nCode Review Results:\n'));
 
   const table = new Table({
     head: ['Metric', 'Score'],
@@ -63,63 +63,63 @@ const displayResults = (data: any): void => {
   });
 
   table.push(
-    [colors.blue('Quality'), data.quality],
-    [colors.blue('Architecture'), data.architecture],
-    [colors.blue('Design'), data.design]
+    [kleur.blue('Quality'), data.quality],
+    [kleur.blue('Architecture'), data.architecture],
+    [kleur.blue('Design'), data.design]
   );
 
   console.log(table.toString());
 
-  console.log(colors.green.bold('\nPotential Bugs:'));
+  console.log(kleur.green().bold('\nPotential Bugs:'));
   data.bugs.forEach((bug: any, index: number) => {
-    console.log(`${index + 1}. ${colors.red('Description:')} ${bug.description}`);
-    console.log(`   ${colors.red('Location:')} ${bug.location} (Line ${bug.line})`);
-    console.log(`   ${colors.red('Severity:')} ${bug.severity}`);
+    console.log(`${index + 1}. ${kleur.red('Description:')} ${bug.description}`);
+    console.log(`   ${kleur.red('Location:')} ${bug.location} (Line ${bug.line})`);
+    console.log(`   ${kleur.red('Severity:')} ${bug.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nSecurity Vulnerabilities:'));
+  console.log(kleur.green().bold('\nSecurity Vulnerabilities:'));
   data.vulnerabilities.forEach((vulnerability: any, index: number) => {
-    console.log(`${index + 1}. ${colors.red('Description:')} ${vulnerability.description}`);
-    console.log(`   ${colors.red('Location:')} ${vulnerability.location} (Line ${vulnerability.line})`);
-    console.log(`   ${colors.red('Severity:')} ${vulnerability.severity}`);
+    console.log(`${index + 1}. ${kleur.red('Description:')} ${vulnerability.description}`);
+    console.log(`   ${kleur.red('Location:')} ${vulnerability.location} (Line ${vulnerability.line})`);
+    console.log(`   ${kleur.red('Severity:')} ${vulnerability.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nPerformance Issues:'));
+  console.log(kleur.green().bold('\nPerformance Issues:'));
   data.performance.forEach((issue: any, index: number) => {
-    console.log(`${index + 1}. ${colors.yellow('Description:')} ${issue.description}`);
-    console.log(`   ${colors.yellow('Location:')} ${issue.location} (Line ${issue.line})`);
-    console.log(`   ${colors.yellow('Severity:')} ${issue.severity}`);
+    console.log(`${index + 1}. ${kleur.yellow('Description:')} ${issue.description}`);
+    console.log(`   ${kleur.yellow('Location:')} ${issue.location} (Line ${issue.line})`);
+    console.log(`   ${kleur.yellow('Severity:')} ${issue.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nImprovements:'));
+  console.log(kleur.green().bold('\nImprovements:'));
   data.improvements.forEach((improvement: any, index: number) => {
-    console.log(`${index + 1}. ${colors.green('Description:')} ${improvement.description}`);
-    console.log(`   ${colors.green('Location:')} ${improvement.location} (Line ${improvement.line})`);
-    console.log(`   ${colors.green('Severity:')} ${improvement.severity}`);
+    console.log(`${index + 1}. ${kleur.green('Description:')} ${improvement.description}`);
+    console.log(`   ${kleur.green('Location:')} ${improvement.location} (Line ${improvement.line})`);
+    console.log(`   ${kleur.green('Severity:')} ${improvement.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nBest Practices:'));
+  console.log(kleur.green().bold('\nBest Practices:'));
   data.bestPractices.forEach((practice: any, index: number) => {
-    console.log(`${index + 1}. ${colors.cyan('Description:')} ${practice.description}`);
-    console.log(`   ${colors.cyan('Location:')} ${practice.location} (Line ${practice.line})`);
-    console.log(`   ${colors.cyan('Severity:')} ${practice.severity}`);
+    console.log(`${index + 1}. ${kleur.cyan('Description:')} ${practice.description}`);
+    console.log(`   ${kleur.cyan('Location:')} ${practice.location} (Line ${practice.line})`);
+    console.log(`   ${kleur.cyan('Severity:')} ${practice.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nStandards:'));
+  console.log(kleur.green().bold('\nStandards:'));
   data.standards.forEach((standard: any, index: number) => {
-    console.log(`${index + 1}. ${colors.magenta('Description:')} ${standard.description}`);
-    console.log(`   ${colors.magenta('Location:')} ${standard.location} (Line ${standard.line})`);
-    console.log(`   ${colors.magenta('Severity:')} ${standard.severity}`);
+    console.log(`${index + 1}. ${kleur.magenta('Description:')} ${standard.description}`);
+    console.log(`   ${kleur.magenta('Location:')} ${standard.location} (Line ${standard.line})`);
+    console.log(`   ${kleur.magenta('Severity:')} ${standard.severity}`);
     console.log();
   });
 
-  console.log(colors.green.bold('\nDetailed Feedback:'));
-  console.log(colors.white(data.feedback));
+  console.log(kleur.green().bold('\nDetailed Feedback:'));
+  console.log(kleur.white(data.feedback));
 };
 
 const main = async (): Promise<void> => {
@@ -130,7 +130,7 @@ const main = async (): Promise<void> => {
 
   rl.question('Enter GitHub username: ', async (username) => {
     if (!username) {
-      console.log(colors.red('Please provide a GitHub username.'));
+      console.log(kleur.red('Please provide a GitHub username.'));
       rl.close();
       return;
     }
@@ -141,7 +141,7 @@ const main = async (): Promise<void> => {
         await sendToGemini(combinedCode);
       }
     } catch (error) {
-      console.error(colors.red('Error:'), error);
+      console.error(kleur.red('Error:'), error);
     } finally {
       rl.close();
     }

@@ -17,39 +17,49 @@ const cli_select_1 = __importDefault(require("cli-select"));
 const simple_git_1 = __importDefault(require("simple-git"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const kleur_1 = __importDefault(require("kleur"));
+const figlet_1 = __importDefault(require("figlet"));
+const printBanner = () => {
+    console.log(kleur_1.default.red(figlet_1.default.textSync("GitHub Repo Authorizer", {
+        horizontalLayout: "default",
+        verticalLayout: "default",
+    })));
+};
 const githubRepositories = (username) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { data } = yield axios_1.default.get(`https://api.github.com/users/${username}/repos`);
         return data;
     }
     catch (error) {
-        console.error("Error fetching repositories", error);
+        console.error(kleur_1.default.red("Error fetching repositories"), error);
         return [];
     }
 });
 const cloneAndParseRepo = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    printBanner();
     const repos = yield githubRepositories(username);
     if (repos.length === 0) {
-        console.log("No repositories found.");
+        console.log(kleur_1.default.yellow("No repositories found."));
         return null;
     }
     const repoNames = repos.map((repo) => repo.name);
     return new Promise((resolve, reject) => {
-        console.log("Select a repository:");
+        console.log(kleur_1.default.green("Select a repository:"));
         (0, cli_select_1.default)({
-            values: repoNames
+            values: repoNames,
+            selected: kleur_1.default.green().bold("✔"),
         }).then((_a) => __awaiter(void 0, [_a], void 0, function* ({ value }) {
             const selectedRepo = repos.find((repo) => repo.name === value);
             if (selectedRepo) {
-                console.log(`You selected: ${value}`);
+                console.log(kleur_1.default.green(`You selected: ${value}`));
                 const repoUrl = selectedRepo.clone_url;
-                console.log(`Cloning ${value} from ${repoUrl}`);
+                console.log(kleur_1.default.blue(`Cloning ${value} from ${repoUrl}`));
                 const git = (0, simple_git_1.default)();
                 try {
                     yield git.clone(repoUrl);
-                    console.log(`Repository ${value} cloned successfully.`);
-                    const repoPath = path_1.default.join(process.cwd(), value);
-                    const outputPath = path_1.default.join(process.cwd(), 'file.txt');
+                    console.log(kleur_1.default.green(`Repository ${value} cloned successfully.`));
+                    const repoPath = path_1.default.join(`${process.cwd()}`, value);
+                    const outputPath = path_1.default.join(`${process.cwd()}/output-directory`, 'file.txt');
                     yield fs_extra_1.default.ensureFile(outputPath);
                     let combinedCode = '';
                     const readFilesRecursively = (dir) => __awaiter(void 0, void 0, void 0, function* () {
@@ -58,13 +68,13 @@ const cloneAndParseRepo = (username) => __awaiter(void 0, void 0, void 0, functi
                             const filePath = path_1.default.join(dir, file);
                             const stat = yield fs_extra_1.default.stat(filePath);
                             if (stat.isDirectory()) {
-                                if (file === '.git' || file === 'node_modules' || file === '.json' || file === 'Library') {
+                                if (['.git', 'node_modules', '.json', 'Library', 'bin', 'obj', 'packages', 'dist', 'build', 'coverage', 'output-directory', '.vscode', '.idea', 'out', 'temp', 'tmp', 'logs', 'log', 'public', 'src/assets'].includes(file)) {
                                     continue;
                                 }
                                 yield readFilesRecursively(filePath);
                             }
                             else {
-                                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store') {
+                                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store' || file.endsWith('.json') || file.endsWith('.ico')) {
                                     continue;
                                 }
                                 const fileContent = yield fs_extra_1.default.readFile(filePath, 'utf-8');
@@ -74,16 +84,16 @@ const cloneAndParseRepo = (username) => __awaiter(void 0, void 0, void 0, functi
                     });
                     yield readFilesRecursively(repoPath);
                     yield fs_extra_1.default.writeFile(outputPath, combinedCode);
-                    console.log(`Combined code written to ${outputPath}`);
+                    console.log(kleur_1.default.green(`Combined code written to ${outputPath}`));
                     resolve(combinedCode);
                 }
                 catch (error) {
-                    console.error(`Error cloning repository ${value}`, error);
+                    console.error(kleur_1.default.red(`Error cloning repository ${value}`), error);
                     reject(error);
                 }
             }
         })).catch(() => {
-            console.log('No repository selected');
+            console.log(kleur_1.default.yellow('No repository selected'));
             reject('No repository selected');
         });
     });
