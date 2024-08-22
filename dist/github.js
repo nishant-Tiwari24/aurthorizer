@@ -68,13 +68,13 @@ const cloneAndParseRepo = (username) => __awaiter(void 0, void 0, void 0, functi
                             const filePath = path_1.default.join(dir, file);
                             const stat = yield fs_extra_1.default.stat(filePath);
                             if (stat.isDirectory()) {
-                                if (['.git', 'node_modules', '.json', 'Library', 'bin', 'obj', 'packages', 'dist', 'build', 'coverage', 'output-directory', '.vscode', '.idea', 'out', 'temp', 'tmp', 'logs', 'log', 'public', 'src/assets'].includes(file)) {
+                                if (['.git', 'node_modules', '.json', 'Library', 'bin', 'obj', 'packages', 'dist', 'build', 'coverage', 'output-directory', '.vscode', '.idea', 'out', 'temp', 'tmp', 'logs', 'log', 'public', 'src/assets', 'images'].includes(file)) {
                                     continue;
                                 }
                                 yield readFilesRecursively(filePath);
                             }
                             else {
-                                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store' || file.endsWith('.json') || file.endsWith('.ico')) {
+                                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store' || file.endsWith('.json') || file.endsWith('.ico') || file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg')) {
                                     continue;
                                 }
                                 const fileContent = yield fs_extra_1.default.readFile(filePath, 'utf-8');

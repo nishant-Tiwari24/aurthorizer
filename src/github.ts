@@ -72,12 +72,12 @@ const cloneAndParseRepo = async (username: string): Promise<string | null> => {
               const filePath = path.join(dir, file);
               const stat = await fs.stat(filePath);
               if (stat.isDirectory()) {
-                if (['.git', 'node_modules', '.json', 'Library', 'bin', 'obj', 'packages', 'dist', 'build', 'coverage', 'output-directory', '.vscode', '.idea', 'out', 'temp', 'tmp', 'logs', 'log', 'public', 'src/assets'].includes(file)) {
+                if (['.git', 'node_modules', '.json', 'Library', 'bin', 'obj', 'packages', 'dist', 'build', 'coverage', 'output-directory', '.vscode', '.idea', 'out', 'temp', 'tmp', 'logs', 'log', 'public', 'src/assets', 'images'].includes(file)) {
                   continue;
                 }
                 await readFilesRecursively(filePath);
               } else {
-                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store' || file.endsWith('.json') || file.endsWith('.ico')) {
+                if (file.endsWith('.sample') || file.endsWith('.md') || file === 'LICENSE' || file === '.gitattributes' || file === '.gitignore' || file === 'README.md' || file === 'CONTRIBUTING.md' || file === 'CODE_OF_CONDUCT.md' || file === '.DS_Store' || file.endsWith('.json') || file.endsWith('.ico') || file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg')) {
                   continue;
                 }
                 const fileContent = await fs.readFile(filePath, 'utf-8');
